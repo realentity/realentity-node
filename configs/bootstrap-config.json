@@ -1,0 +1,17 @@
+{
+  "discovery": {
+    "enable_mdns": false,
+    "enable_bootstrap": true,
+    "enable_dht": false,
+    "mdns_service_tag": "realentity-mdns",
+    "mdns_quiet_mode": true,
+    "bootstrap_peers": [],
+    "dht_rendezvous": "realentity-dht"
+  },
+  "log_level": "info",
+  "server": {
+    "bind_address": "0.0.0.0",
+    "port": 4001,
+    "public_ip": "172.20.0.10"
+  }
+}

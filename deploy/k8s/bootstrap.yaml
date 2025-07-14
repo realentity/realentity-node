@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: realentity
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: realentity-bootstrap-config
+  namespace: realentity
+data:
+  config.json: |
+    {
+      "discovery": {
+        "enable_mdns": false,
+        "enable_bootstrap": true,
+        "enable_dht": true,
+        "mdns_service_tag": "realentity-k8s",
+        "mdns_quiet_mode": true,
+        "bootstrap_peers": [],
+        "dht_rendezvous": "realentity-dht"
+      },
+      "log_level": "info",
+      "server": {
+        "bind_address": "0.0.0.0",
+        "port": 4001
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: realentity-bootstrap
+  namespace: realentity
+  labels:
+    app: realentity
+    role: bootstrap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: realentity
+      role: bootstrap
+  template:
+    metadata:
+      labels:
+        app: realentity
+        role: bootstrap
+    spec:
+      containers:
+      - name: realentity-node
+        image: realentity/node:latest
+        ports:
+        - containerPort: 4001
+          name: p2p
+        volumeMounts:
+        - name: config
+          mountPath: /root/config.json
+          subPath: config.json
+        env:
+        - name: NODE_TYPE
+          value: "bootstrap"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+      volumes:
+      - name: config
+        configMap:
+          name: realentity-bootstrap-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: realentity-bootstrap-service
+  namespace: realentity
+spec:
+  selector:
+    app: realentity
+    role: bootstrap
+  ports:
+  - name: p2p
+    port: 4001
+    targetPort: 4001
+  type: LoadBalancer
