@@ -1,0 +1,34 @@
+@host = http://localhost:8080
+
+GET {{host}}/health
+
+###
+GET {{host}}//api/node
+
+###
+GET {{host}}/api/peers
+
+###
+GET {{host}}/api/services
+
+###
+POST {{host}}/api/services/execute
+
+{
+    "service": "text.process",
+    "payload": {
+      "text": "hello world",
+      "operation": "uppercase"
+    }
+}
+
+
+###
+POST {{host}}/api/services/execute
+
+{
+    "service": "echo",
+    "payload": {
+      "message": "Hello"
+    }
+}
