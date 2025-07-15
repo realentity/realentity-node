@@ -1,18 +1,21 @@
 {
-  "private_key": "CAESQPtGFpHx7HRcrEn1NmGkQZtojJ/Hc13pBjBMW698UpW5pAimxXmoatYk6c7GlAj1M6GIbN1VHzUAFPpWHCfesc4=",
   "discovery": {
-    "enable_mdns": false,
+    "enable_mdns": true,
     "enable_bootstrap": true,
     "enable_dht": false,
     "mdns_service_tag": "realentity-mdns",
-    "mdns_quiet_mode": true,
+    "mdns_quiet_mode": false,
     "bootstrap_peers": [],
     "dht_rendezvous": "realentity-dht"
   },
   "server": {
     "bind_address": "0.0.0.0",
     "port": 4001,
-    "public_ip": "YOUR_PUBLIC_IP_HERE"
+    "http_port": 8080,
+    "https_port": 0,
+    "public_ip": "",
+    "tls_cert_file": "",
+    "tls_key_file": ""
   },
   "log_level": "info"
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"time"
 
@@ -18,8 +19,12 @@ import (
 func main() {
 	ctx := context.Background()
 
+	// Parse command line flags
+	configFile := flag.String("config", "config.json", "Path to configuration file")
+	flag.Parse()
+
 	// Load configuration
-	cfg, err := config.LoadConfig("config.json")
+	cfg, err := config.LoadConfig(*configFile)
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
