@@ -14,6 +14,9 @@ import (
 	"github.com/realentity/realentity-node/internal/protocol"
 	"github.com/realentity/realentity-node/internal/services"
 	"github.com/realentity/realentity-node/internal/utils"
+
+	// Import service implementations to trigger their init() functions
+	_ "github.com/realentity/realentity-node/internal/services/impl"
 )
 
 func main() {
@@ -49,6 +52,9 @@ func main() {
 		}
 
 		host, err = node.CreateHostWithPrivateKey(ctx, hostConfig, priv)
+		if err != nil {
+			log.Fatalf("Failed to create host with private key: %v", err)
+		}
 	} else if cfg.Server.PublicIP != "" {
 		// VPS mode with known public IP
 		host, err = node.CreateVPSHost(ctx, cfg.Server.PublicIP, cfg.Server.Port)
@@ -129,26 +135,35 @@ func main() {
 }
 
 func initializeServices(nodeID string) {
-	// Use the original service creation from examples.go to test logging
-	log.Printf("Initializing services for node %s", nodeID)
+	// Use dynamic service loading - automatically discover and register all services
+	log.Printf("Discovering and initializing services for node %s", nodeID)
 
-	// Register echo service
-	echoService := services.CreateEchoService(nodeID)
-	if err := services.GlobalRegistry.RegisterService(echoService); err != nil {
-		log.Printf("Failed to register echo service: %v", err)
-	} else {
-		log.Printf("Echo service registered successfully")
+	// Get all available services from the registry
+	availableServices := services.GlobalServiceRegistry.ListAvailableServices()
+	log.Printf("Available services: %v", availableServices)
+
+	// Create and register all services dynamically
+	serviceInstances, err := services.GlobalServiceRegistry.CreateAllServices(nodeID)
+	if err != nil {
+		log.Printf("Failed to create services: %v", err)
+		return
 	}
 
-	// Register text processing service
-	textService := services.CreateTextProcessService()
-	if err := services.GlobalRegistry.RegisterService(textService); err != nil {
-		log.Printf("Failed to register text.process service: %v", err)
-	} else {
-		log.Printf("Text.process service registered successfully")
+	// Register all created services with the global registry
+	registeredCount := 0
+	for _, service := range serviceInstances {
+		if err := services.GlobalRegistry.RegisterService(service); err != nil {
+			log.Printf("Failed to register service %s: %v", service.Name, err)
+		} else {
+			registeredCount++
+			log.Printf("Successfully registered service: %s (v%s) - %s",
+				service.Name, service.Version, service.Description)
+		}
 	}
 
-	log.Printf("Services initialized: %v", services.GlobalRegistry.ListServices())
+	log.Printf("Service initialization complete: %d/%d services registered successfully",
+		registeredCount, len(serviceInstances))
+	log.Printf("Active services: %v", services.GlobalRegistry.ListServices())
 }
 
 func logDiscoveryStats(dm *discovery.DiscoveryManager) {

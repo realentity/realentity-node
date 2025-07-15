@@ -31,3 +31,14 @@ POST {{host}}/api/services/execute
       "message": "Hello"
     }
 }
+
+###
+POST {{host}}/api/services/execute
+
+{
+  "service": "math", 
+  "payload": {
+    "operation": "add", 
+    "numbers": [11, 20, 5]
+  }
+}

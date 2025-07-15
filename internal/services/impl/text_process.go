@@ -1,51 +1,13 @@
-package services
+package impl
 
 import (
 	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
-	"time"
+
+	"github.com/realentity/realentity-node/internal/services"
 )
-
-// EchoRequest represents the payload for echo service
-type EchoRequest struct {
-	Message string `json:"message"`
-}
-
-// EchoResponse represents the response from echo service
-type EchoResponse struct {
-	Echo      string    `json:"echo"`
-	Timestamp time.Time `json:"timestamp"`
-	NodeID    string    `json:"nodeId"`
-}
-
-// CreateEchoService creates a simple echo service for testing
-func CreateEchoService(nodeID string) *Service {
-	return &Service{
-		Name:        "echo",
-		Description: "Simple echo service for testing connectivity",
-		Version:     "1.0.0",
-		Metadata: map[string]string{
-			"category": "utility",
-			"cost":     "free",
-		},
-		Handler: func(payload []byte) ([]byte, error) {
-			var req EchoRequest
-			if err := json.Unmarshal(payload, &req); err != nil {
-				return nil, fmt.Errorf("invalid echo request: %v", err)
-			}
-
-			response := EchoResponse{
-				Echo:      req.Message,
-				Timestamp: time.Now(),
-				NodeID:    nodeID,
-			}
-
-			return json.Marshal(response)
-		},
-	}
-}
 
 // TextProcessRequest represents the payload for text processing
 type TextProcessRequest struct {
@@ -61,8 +23,8 @@ type TextProcessResponse struct {
 }
 
 // CreateTextProcessService creates a text processing service
-func CreateTextProcessService() *Service {
-	return &Service{
+func CreateTextProcessService(nodeID string) *services.Service {
+	return &services.Service{
 		Name:        "text.process",
 		Description: "Basic text processing operations",
 		Version:     "1.0.0",
@@ -101,8 +63,18 @@ func CreateTextProcessService() *Service {
 				Operation: req.Operation,
 			}
 
+			result, err := json.Marshal(response)
+			if err != nil {
+				return nil, err
+			}
+
 			log.Printf("text.process service completed: result='%s'", processed)
-			return json.Marshal(response)
+			return result, nil
 		},
 	}
+}
+
+// Register this service with the global registry
+func init() {
+	services.GlobalServiceRegistry.RegisterServiceFactory("text.process", CreateTextProcessService)
 }
