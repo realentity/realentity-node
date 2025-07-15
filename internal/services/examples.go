@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 )
@@ -76,6 +77,8 @@ func CreateTextProcessService() *Service {
 				return nil, fmt.Errorf("invalid text process request: %v", err)
 			}
 
+			log.Printf("text.process service executing: operation='%s', text='%s'", req.Operation, req.Text)
+
 			var processed string
 			switch req.Operation {
 			case "uppercase":
@@ -98,6 +101,7 @@ func CreateTextProcessService() *Service {
 				Operation: req.Operation,
 			}
 
+			log.Printf("text.process service completed: result='%s'", processed)
 			return json.Marshal(response)
 		},
 	}

@@ -129,30 +129,35 @@ func main() {
 }
 
 func initializeServices(nodeID string) {
-	// Register example services
+	// Use the original service creation from examples.go to test logging
+	log.Printf("Initializing services for node %s", nodeID)
+
+	// Register echo service
 	echoService := services.CreateEchoService(nodeID)
 	if err := services.GlobalRegistry.RegisterService(echoService); err != nil {
-		log.Printf("Failed to register echo service: %v\n", err)
+		log.Printf("Failed to register echo service: %v", err)
+	} else {
+		log.Printf("Echo service registered successfully")
 	}
 
+	// Register text processing service
 	textService := services.CreateTextProcessService()
 	if err := services.GlobalRegistry.RegisterService(textService); err != nil {
-		log.Printf("Failed to register text service: %v\n", err)
+		log.Printf("Failed to register text.process service: %v", err)
+	} else {
+		log.Printf("Text.process service registered successfully")
 	}
 
-	log.Printf("Services initialized: %v\n", services.GlobalRegistry.ListServices())
+	log.Printf("Services initialized: %v", services.GlobalRegistry.ListServices())
 }
 
 func logDiscoveryStats(dm *discovery.DiscoveryManager) {
 	ticker := time.NewTicker(60 * time.Second)
 	defer ticker.Stop()
 
-	for {
-		select {
-		case <-ticker.C:
-			peers := dm.GetPeers()
-			connectable := dm.GetConnectablePeers()
-			log.Printf("Discovery stats: %d total peers, %d connectable\n", len(peers), len(connectable))
-		}
+	for range ticker.C {
+		peers := dm.GetPeers()
+		connectable := dm.GetConnectablePeers()
+		log.Printf("Discovery stats: %d total peers, %d connectable\n", len(peers), len(connectable))
 	}
 }

@@ -302,7 +302,7 @@ func (s *Server) handleServiceExecution(w http.ResponseWriter, r *http.Request) 
 		Payload:   json.RawMessage(payloadBytes),
 	}
 
-	// Execute service
+	// Execute service using the original GlobalRegistry
 	response := services.GlobalRegistry.ExecuteService(serviceReq)
 
 	// Return response
