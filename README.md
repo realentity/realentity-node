@@ -69,7 +69,32 @@ docs/                     # Documentation
 ├── DEPLOYMENT_SUMMARY.md # Deployment overview
 ├── DISCOVERY.md         # Discovery mechanism details
 └── *.md                 # Other documentation
+tests/                   # Testing utilities and scripts
+├── README.md           # Testing documentation
+├── console/            # Console-based testing tools
+├── api/                # HTTP API testing scripts
+└── examples/           # Example test cases and data
 ```
+
+## Testing
+
+### Quick Test Run
+
+```bash
+# Windows
+run_tests.bat
+
+# Linux/macOS
+./run_tests.sh
+```
+
+### Test Types
+
+- **Unit Tests**: `go test ./cmd -v` or `run_tests.bat unit`
+- **Console Tests**: `run_tests.bat console` - Test services via command line
+- **API Tests**: `run_tests.bat api` - Test HTTP API endpoints (requires running server)
+
+See [`tests/README.md`](tests/README.md) for detailed testing documentation.
 
 ## Development
 

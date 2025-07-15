@@ -207,7 +207,7 @@ To connect nodes across the internet, add bootstrap peer addresses to your `conf
 
 ---
 
-## � Current Implementation Status
+## Current Implementation Status
 
 ###  Completed Features
 
@@ -228,7 +228,7 @@ To connect nodes across the internet, add bootstrap peer addresses to your `conf
 
 ---
 
-## � Upcoming Features
+## Upcoming Features
 
 | Feature                        | Status        |
 | ------------------------------ | ------------- |
@@ -244,7 +244,7 @@ To connect nodes across the internet, add bootstrap peer addresses to your `conf
 
 ---
 
-## � Example Output
+## Example Output
 
 ```
 2025/07/12 Host created: 12D3K...abc123
@@ -263,7 +263,7 @@ To connect nodes across the internet, add bootstrap peer addresses to your `conf
 
 ---
 
-## � Primary Use Cases (Initial)
+## Primary Use Cases (Initial)
 
 * Send and receive AI or image-processing tasks
 * Create a scalable distributed service network

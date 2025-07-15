@@ -1,0 +1,94 @@
+{
+  "test_cases": [
+    {
+      "name": "Basic uppercase",
+      "service": "text.process",
+      "payload": {
+        "text": "hello world",
+        "operation": "uppercase"
+      },
+      "expected_result": {
+        "processed": "HELLO WORLD"
+      }
+    },
+    {
+      "name": "Basic lowercase",
+      "service": "text.process",
+      "payload": {
+        "text": "HELLO WORLD",
+        "operation": "lowercase"
+      },
+      "expected_result": {
+        "processed": "hello world"
+      }
+    },
+    {
+      "name": "Basic reverse",
+      "service": "text.process",
+      "payload": {
+        "text": "hello",
+        "operation": "reverse"
+      },
+      "expected_result": {
+        "processed": "olleh"
+      }
+    },
+    {
+      "name": "Complex text uppercase",
+      "service": "text.process",
+      "payload": {
+        "text": "RealEntity Node v1.0!",
+        "operation": "uppercase"
+      },
+      "expected_result": {
+        "processed": "REALENTITY NODE V1.0!"
+      }
+    },
+    {
+      "name": "Unicode text reverse",
+      "service": "text.process",
+      "payload": {
+        "text": "café",
+        "operation": "reverse"
+      },
+      "expected_result": {
+        "processed": "éfac"
+      }
+    },
+    {
+      "name": "Echo service test",
+      "service": "echo",
+      "payload": {
+        "message": "Hello from test suite!"
+      },
+      "expected_contains": {
+        "echo": "Hello from test suite!"
+      }
+    }
+  ],
+  "error_cases": [
+    {
+      "name": "Invalid service",
+      "service": "nonexistent",
+      "payload": {},
+      "expected_error": "service 'nonexistent' not found"
+    },
+    {
+      "name": "Invalid operation",
+      "service": "text.process",
+      "payload": {
+        "text": "test",
+        "operation": "invalid"
+      },
+      "expected_error": "unsupported operation: invalid"
+    },
+    {
+      "name": "Missing text field",
+      "service": "text.process",
+      "payload": {
+        "operation": "uppercase"
+      },
+      "expected_error": "invalid text process request"
+    }
+  ]
+}

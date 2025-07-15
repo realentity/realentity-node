@@ -77,6 +77,9 @@ func (s *Server) Start() error {
 	// Services endpoint
 	mux.HandleFunc("/api/services", s.handleServices)
 
+	// Service execution endpoint
+	mux.HandleFunc("/api/services/execute", s.handleServiceExecution)
+
 	// Start HTTP server
 	if s.port > 0 {
 		s.server = &http.Server{
@@ -235,5 +238,78 @@ func (s *Server) handleServices(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
+
+// ServiceExecutionRequest represents a request to execute a service
+type ServiceExecutionRequest struct {
+	Service   string      `json:"service"`
+	Payload   interface{} `json:"payload"`
+	RequestID string      `json:"requestId,omitempty"`
+}
+
+// handleServiceExecution handles the /api/services/execute endpoint
+func (s *Server) handleServiceExecution(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Only allow POST requests
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Only POST method is allowed",
+		})
+		return
+	}
+
+	// Parse request body
+	var execReq ServiceExecutionRequest
+	if err := json.NewDecoder(r.Body).Decode(&execReq); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": fmt.Sprintf("Invalid request body: %v", err),
+		})
+		return
+	}
+
+	// Validate required fields
+	if execReq.Service == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Service name is required",
+		})
+		return
+	}
+
+	// Generate request ID if not provided
+	if execReq.RequestID == "" {
+		execReq.RequestID = fmt.Sprintf("api-req-%d", time.Now().UnixNano())
+	}
+
+	// Convert payload to JSON
+	payloadBytes, err := json.Marshal(execReq.Payload)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": fmt.Sprintf("Invalid payload: %v", err),
+		})
+		return
+	}
+
+	// Create service request
+	serviceReq := &services.ServiceRequest{
+		Service:   execReq.Service,
+		RequestID: execReq.RequestID,
+		Payload:   json.RawMessage(payloadBytes),
+	}
+
+	// Execute service
+	response := services.GlobalRegistry.ExecuteService(serviceReq)
+
+	// Return response
+	if response.Success {
+		w.WriteHeader(http.StatusOK)
+	} else {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 	json.NewEncoder(w).Encode(response)
 }
